@@ -3,6 +3,7 @@
 
 use OpenAI\Resources\Completions;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
+use function Pest\Laravel\post;
 
 it('can suggest an email', function () {
 
@@ -27,4 +28,17 @@ it('should suggest a correct email address',function(){
 
     $results = $mocked->suggest($initialInput);
     $this->expect($results)->toBe('test@yahoo.com');
+});
+
+
+it ('should return a suggestion from a controller',function(){
+    $initialInput = "test@yaohh.com";
+
+  //  $results = 'test@yahoo.com';
+
+    AiEmailSuggest::fake();
+
+    $response = post(route('ai-email-suggest'),['email'=>$initialInput])->assertOk();
+
+    $this->expect($response->json('suggestion'))->toBe($initialInput);
 });

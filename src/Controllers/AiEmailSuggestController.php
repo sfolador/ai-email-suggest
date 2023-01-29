@@ -4,7 +4,7 @@ namespace Sfolador\AiEmailSuggest\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Sfolador\AiEmailSuggest\AiEmailSuggest;
+use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 
 class AiEmailSuggestController extends Controller
 {
