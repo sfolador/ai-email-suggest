@@ -5,18 +5,58 @@ namespace Sfolador\AiEmailSuggest;
 use Illuminate\Support\Str;
 use OpenAI;
 
-class AiEmailSuggest
+class AiEmailSuggest implements AiEmailSuggestInterface
 {
 
-    public function suggest($email): string
-    {
-        $client = OpenAI::client(config('ai-email-suggest.openai_key'));
+    private OpenAI\Client $client;
+    private string|null $suggestion;
+    private string $email;
 
-        $response = $client->completions()->create([
-            'prompt' => str_replace('%input%', $email, config('ai-email-suggest.prompt')),
+    public function __construct()
+    {
+        $this->client = OpenAI::client(config('ai-email-suggest.openai_key'));
+    }
+
+    private function getSuggestion()
+    {
+
+        $response = $this->client->completions()->create([
+            'prompt' => $this->createPrompt($this->email),
             'model' => config('ai-email-suggest.model')
         ]);
 
-        return Str::of(collect($response->choices)->first()->text)->trim()->value();
+        $this->suggestion = Str::of(collect($response->choices)->first()->text)->trim()->value();
     }
+
+    public function createPrompt(string $email): string
+    {
+        return str_replace('%input%', $email, config('ai-email-suggest.prompt'));
+    }
+
+    public function suggest(string $email): string|null
+    {
+        $this->email = $email;
+        $this->getSuggestion();
+
+        if ($this->hasSuggestion()) {
+            return $this->getEmailAddressWithNoDomain() . "@" .  $this->suggestion;
+        }
+        return null;
+    }
+
+    private function getEmailAddressWithNoDomain(): string
+    {
+       return explode('@', $this->email)[0];
+    }
+
+    public function hasSuggestion(): bool
+    {
+
+        if ($this->suggestion === $this->email) {
+            return false;
+        }
+        return true;
+    }
+
+
 }
