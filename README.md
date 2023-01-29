@@ -40,6 +40,17 @@ $aiEmailSuggest = AiEmailSuggest::suggest('test@yaohh.com');
 // $aiEmailSuggest = 'test@yahoo.com'
 ```
 
+It's possible to use this package from the frontend by invoking the route: "/ai-email-suggest" in POST by passing the email as a parameter.
+The response will be a JSON with the suggested email, such as:
+
+```json
+{
+  "suggestion": "test@yahoo.com"
+}
+```
+
+
+
 ## Testing
 
 ```bash
