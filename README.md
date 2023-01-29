@@ -1,11 +1,13 @@
-# This package suggests email addresses
+# Never worry about typos in email addresses
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sfolador/ai-email-suggest.svg?style=flat-square)](https://packagist.org/packages/sfolador/ai-email-suggest)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sfolador/ai-email-suggest/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sfolador/ai-email-suggest/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/sfolador/ai-email-suggest/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/sfolador/ai-email-suggest/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/sfolador/ai-email-suggest.svg?style=flat-square)](https://packagist.org/packages/sfolador/ai-email-suggest)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package provides a simple way to suggest email addresses based on a given email address. The typical use case is
+when a user enters an email address with typos, i.e.: example@gmial.com. 
+This package uses OpenAI to suggest an email addresses that are likely to be correct.
 
 ## Installation
 
@@ -32,6 +34,8 @@ return [
     'default_response' => 'Maybe you meant %suggestion%?'
 ];
 ```
+
+*Remember to set your OpenAI key in your .env file.*
 
 ## Usage
 

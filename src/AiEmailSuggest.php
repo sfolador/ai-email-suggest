@@ -7,9 +7,10 @@ use OpenAI;
 
 class AiEmailSuggest implements AiEmailSuggestInterface
 {
-
     private OpenAI\Client $client;
+
     private string|null $suggestion;
+
     private string $email;
 
     public function __construct()
@@ -19,10 +20,9 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     private function getSuggestion()
     {
-
         $response = $this->client->completions()->create([
             'prompt' => $this->createPrompt($this->email),
-            'model' => config('ai-email-suggest.model')
+            'model' => config('ai-email-suggest.model'),
         ]);
 
         $this->suggestion = Str::of(collect($response->choices)->first()->text)->trim()->value();
@@ -39,24 +39,23 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         $this->getSuggestion();
 
         if ($this->hasSuggestion()) {
-            return $this->getEmailAddressWithNoDomain() . "@" .  $this->suggestion;
+            return $this->getEmailAddressWithNoDomain().'@'.$this->suggestion;
         }
+
         return null;
     }
 
     private function getEmailAddressWithNoDomain(): string
     {
-       return explode('@', $this->email)[0];
+        return explode('@', $this->email)[0];
     }
 
     public function hasSuggestion(): bool
     {
-
         if ($this->suggestion === $this->email) {
             return false;
         }
+
         return true;
     }
-
-
 }

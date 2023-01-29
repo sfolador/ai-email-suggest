@@ -6,5 +6,5 @@ return [
        Give only the domain as a result.',
     'model' => 'text-davinci-003',
     'openai_key' => env('OPENAI_KEY'),
-    'default_response' => 'Maybe you meant %suggestion%?'
+    'default_response' => 'Maybe you meant %suggestion%?',
 ];

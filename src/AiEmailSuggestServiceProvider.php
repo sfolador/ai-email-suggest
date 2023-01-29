@@ -4,7 +4,6 @@ namespace Sfolador\AiEmailSuggest;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Sfolador\AiEmailSuggest\Commands\AiEmailSuggestCommand;
 
 class AiEmailSuggestServiceProvider extends PackageServiceProvider
 {
@@ -23,8 +22,7 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
 
     public function registeringPackage()
     {
-
-       // $this->app->alias(AiEmailSuggest::class, 'email-suggest');
+        // $this->app->alias(AiEmailSuggest::class, 'email-suggest');
 
         $this->app->bind(AiEmailSuggestInterface::class, function () {
             return new AiEmailSuggest();

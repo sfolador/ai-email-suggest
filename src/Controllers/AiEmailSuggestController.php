@@ -14,7 +14,7 @@ class AiEmailSuggestController extends Controller
         $suggestion = AiEmailSuggest::suggest($email);
 
         return response()->json([
-            'suggestion' => $suggestion
+            'suggestion' => $suggestion,
         ]);
     }
 }

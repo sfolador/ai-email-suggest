@@ -11,7 +11,6 @@ class AiEmailSuggestFake implements AiEmailSuggestInterface
 
     public function createPrompt(string $email): string
     {
-        return "";
+        return '';
     }
-
 }
