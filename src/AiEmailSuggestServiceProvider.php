@@ -17,6 +17,7 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
         $package
             ->name('ai-email-suggest')
             ->hasRoute('ai_email_suggest_routes')
+            ->hasViews()
             ->hasConfigFile();
     }
 

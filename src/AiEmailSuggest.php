@@ -30,7 +30,9 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     public function createPrompt(string $email): string
     {
-        return str_replace('%input%', $email, config('ai-email-suggest.prompt'));
+        return view('ai-email-suggest::prompt', [
+            'input' => $email,
+        ])->render();
     }
 
     public function suggest(string $email): string|null
