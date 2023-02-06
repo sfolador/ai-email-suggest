@@ -47,7 +47,6 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         return null;
     }
 
-
     public function hasSuggestion(): bool
     {
         if ($this->suggestion === $this->email) {
