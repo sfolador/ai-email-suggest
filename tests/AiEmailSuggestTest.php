@@ -34,3 +34,17 @@ it('should return a suggestion from a controller', function () {
 
     $this->expect($response->json('suggestion'))->toBe($initialInput);
 });
+
+it('validates the email address', function () {
+    $initialInput = 'wrong_email@';
+
+    AiEmailSuggest::fake();
+
+    post(route('ai-email-suggest'), ['email' => $initialInput])->assertInvalid(['email']);
+    post(route('ai-email-suggest'), ['email' => null])->assertInvalid(['email' => 'required']);
+});
+
+it('checks if email address is null', function () {
+    AiEmailSuggest::fake();
+    post(route('ai-email-suggest'), ['email' => null])->assertInvalid(['email' => 'required']);
+});

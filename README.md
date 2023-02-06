@@ -58,6 +58,11 @@ The response will be a JSON with the suggested email, such as:
 ```bash
 composer test
 ```
+## TODO
+
+- [ ] Add caching to avoid too many requests to OpenAI
+- [ ] Add throttling to avoid too many requests to OpenAI
+
 
 ## Changelog
 
