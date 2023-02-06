@@ -31,7 +31,7 @@ class AiEmailSuggest implements AiEmailSuggestInterface
     public function createPrompt(string $email): string
     {
         return view('ai-email-suggest::prompt', [
-            'input' => $email,
+            'email' => $email,
         ])->render();
     }
 
