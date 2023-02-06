@@ -22,8 +22,9 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     private function getSuggestion(): void
     {
-        if ($this->suggestionAlreadySeen($this->email)){
+        if ($this->suggestionAlreadySeen($this->email)) {
             $this->suggestion = $this->getSeenSuggestion($this->email);
+
             return;
         }
         $response = $this->getApiResponse();
@@ -66,9 +67,10 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     public function suggestionAlreadySeen($email): bool
     {
-        if (!config('ai-email-suggest.use_cache')) {
+        if (! config('ai-email-suggest.use_cache')) {
             return false;
         }
+
         return Cache::has($this->getCacheKey($email));
     }
 
@@ -86,6 +88,6 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     private function getCacheKey($email): string
     {
-        return 'ai-email-suggest-' . $email;
+        return 'ai-email-suggest-'.$email;
     }
 }

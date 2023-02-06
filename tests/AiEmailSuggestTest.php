@@ -3,13 +3,12 @@
 use DG\BypassFinals;
 use Illuminate\Support\Facades\Cache;
 use OpenAI\Responses\Completions\CreateResponse;
-use OpenAI\Responses\Completions\CreateResponseUsage;
 use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 
-beforeEach(function(){
+beforeEach(function () {
     BypassFinals::enable();
-    $inputEmail = "text@example.com";
+    $inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 });
 
@@ -57,17 +56,15 @@ it('checks if email address is null', function () {
     post(route('ai-email-suggest'), ['email' => null])->assertInvalid(['email' => 'required']);
 });
 
-
 it('returns an empty prompt if fake', function () {
-    $inputEmail = "text@example.com";
+    $inputEmail = 'text@example.com';
     AiEmailSuggest::fake();
     expect(AiEmailSuggest::createPrompt($inputEmail))->toBe('');
 });
 
 it('can use cache', function () {
-
-    $inputEmail = "text@example.com";
-    $cacheKey = 'ai-email-suggest-' . $inputEmail;
+    $inputEmail = 'text@example.com';
+    $cacheKey = 'ai-email-suggest-'.$inputEmail;
 
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
     Cache::shouldReceive('get')->once()->with($cacheKey)->andReturn('text@text.com');
@@ -79,23 +76,21 @@ it('can use cache', function () {
     $this->expect($suggestion)->toBe('text@text.com');
 });
 
-
 it('saves suggestions in cache', function () {
-    $inputEmail = "text@example.com";
-    $cacheKey = 'ai-email-suggest-' . $inputEmail;
+    $inputEmail = 'text@example.com';
+    $cacheKey = 'ai-email-suggest-'.$inputEmail;
 
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 
-    Cache::shouldReceive('forever')->once()->withArgs([$cacheKey,"suggestion"]);
+    Cache::shouldReceive('forever')->once()->withArgs([$cacheKey, 'suggestion']);
 
     $aiSuggest = new \Sfolador\AiEmailSuggest\AiEmailSuggest();
-    $aiSuggest->saveSuggestion($inputEmail, "suggestion");
-
+    $aiSuggest->saveSuggestion($inputEmail, 'suggestion');
 });
 
 it('checks if suggestion is already seen', function () {
-    $inputEmail = "text@example.com";
-    $cacheKey = 'ai-email-suggest-' . $inputEmail;
+    $inputEmail = 'text@example.com';
+    $cacheKey = 'ai-email-suggest-'.$inputEmail;
 
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
@@ -104,8 +99,8 @@ it('checks if suggestion is already seen', function () {
     expect($aiSuggest->suggestionAlreadySeen($inputEmail))->toBeTrue();
 });
 
-it('suggestion has not been seen if the config is false',function(){
-    $inputEmail = "text@example.com";
+it('suggestion has not been seen if the config is false', function () {
+    $inputEmail = 'text@example.com';
 
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
     config()->set('ai-email-suggest.use_cache', false);
@@ -114,9 +109,8 @@ it('suggestion has not been seen if the config is false',function(){
     expect($aiSuggest->suggestionAlreadySeen($inputEmail))->toBeFalse();
 });
 
-
-it('could return a null suggestion',function(){
-    $inputEmail = "text@example.com";
+it('could return a null suggestion', function () {
+    $inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 
     $mocked = \Pest\Laravel\mock(\Sfolador\AiEmailSuggest\AiEmailSuggest::class)
@@ -128,14 +122,12 @@ it('could return a null suggestion',function(){
     $mocked->shouldReceive('hasSuggestion')
         ->andReturnFalse()->getMock();
 
-    $results =    $mocked->suggest($inputEmail);
+    $results = $mocked->suggest($inputEmail);
     expect($results)->toBeNull();
-
 });
 
-it('creates a prompt with a view',function(){
-    $inputEmail = "text@example.com";
-
+it('creates a prompt with a view', function () {
+    $inputEmail = 'text@example.com';
 
     $aiSuggest = new Sfolador\AiEmailSuggest\AiEmailSuggest();
     $prompt = $aiSuggest->createPrompt($inputEmail);
