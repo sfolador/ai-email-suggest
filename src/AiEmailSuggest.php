@@ -41,16 +41,12 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         $this->getSuggestion();
 
         if ($this->hasSuggestion()) {
-            return $this->getEmailAddressWithNoDomain().'@'.$this->suggestion;
+            return $this->suggestion;
         }
 
         return null;
     }
 
-    private function getEmailAddressWithNoDomain(): string
-    {
-        return explode('@', $this->email)[0];
-    }
 
     public function hasSuggestion(): bool
     {
