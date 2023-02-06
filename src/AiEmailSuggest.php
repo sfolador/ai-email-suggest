@@ -2,8 +2,10 @@
 
 namespace Sfolador\AiEmailSuggest;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use OpenAI;
+use OpenAI\Responses\Completions\CreateResponse;
 
 class AiEmailSuggest implements AiEmailSuggestInterface
 {
@@ -18,14 +20,24 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         $this->client = OpenAI::client(config('ai-email-suggest.openai_key'));
     }
 
-    private function getSuggestion()
+    private function getSuggestion(): void
     {
-        $response = $this->client->completions()->create([
+        if ($this->suggestionAlreadySeen($this->email)){
+            $this->suggestion = $this->getSeenSuggestion($this->email);
+            return;
+        }
+        $response = $this->getApiResponse();
+
+        $this->suggestion = Str::of(collect($response->choices)->first()->text)->trim()->value();
+        $this->saveSuggestion($this->email, $this->suggestion);
+    }
+
+    public function getApiResponse(): CreateResponse
+    {
+        return  $this->client->completions()->create([
             'prompt' => $this->createPrompt($this->email),
             'model' => config('ai-email-suggest.model'),
         ]);
-
-        $this->suggestion = Str::of(collect($response->choices)->first()->text)->trim()->value();
     }
 
     public function createPrompt(string $email): string
@@ -49,10 +61,31 @@ class AiEmailSuggest implements AiEmailSuggestInterface
 
     public function hasSuggestion(): bool
     {
-        if ($this->suggestion === $this->email) {
+        return $this->suggestion !== $this->email;
+    }
+
+    public function suggestionAlreadySeen($email): bool
+    {
+        if (!config('ai-email-suggest.use_cache')) {
             return false;
         }
+        return Cache::has($this->getCacheKey($email));
+    }
 
-        return true;
+    public function saveSuggestion($email, $suggestion): void
+    {
+        if (config('ai-email-suggest.use_cache')) {
+            Cache::forever($this->getCacheKey($email), $suggestion);
+        }
+    }
+
+    private function getSeenSuggestion($email): mixed
+    {
+        return Cache::get($this->getCacheKey($email));
+    }
+
+    private function getCacheKey($email): string
+    {
+        return 'ai-email-suggest-' . $email;
     }
 }
