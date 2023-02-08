@@ -1,13 +1,11 @@
 <?php
 
-
 use Illuminate\Support\Facades\Cache;
 use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 use Sfolador\AiEmailSuggest\Facades\AiService;
 
 beforeEach(function () {
-
     $this->inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 });
