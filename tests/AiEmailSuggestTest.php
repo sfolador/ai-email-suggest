@@ -1,16 +1,13 @@
 <?php
 
-use DG\BypassFinals;
+
 use Illuminate\Support\Facades\Cache;
-use OpenAI\Client;
-use OpenAI\Resources\Completions;
-use OpenAI\Responses\Completions\CreateResponse;
 use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 use Sfolador\AiEmailSuggest\Facades\AiService;
 
 beforeEach(function () {
-    BypassFinals::enable();
+
     $this->inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 });
