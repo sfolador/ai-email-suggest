@@ -2,26 +2,27 @@
 
 use DG\BypassFinals;
 use Illuminate\Support\Facades\Cache;
+use OpenAI\Client;
+use OpenAI\Resources\Completions;
 use OpenAI\Responses\Completions\CreateResponse;
 use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
+use Sfolador\AiEmailSuggest\Facades\AiService;
 
 beforeEach(function () {
     BypassFinals::enable();
-    $inputEmail = 'text@example.com';
+    $this->inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
 });
 
 it('can suggest an email', function () {
     AiEmailSuggest::fake();
-
     $suggestion = AiEmailSuggest::suggest('email@example.com');
     $this->expect($suggestion)->toBe('email@example.com');
 });
 
 it('should suggest a correct email address', function () {
     $initialInput = 'test@yaohh.com';
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
 
     $mocked = \Pest\Laravel\mock(\Sfolador\AiEmailSuggest\AiEmailSuggest::class)
         ->shouldReceive('suggest')
@@ -56,124 +57,107 @@ it('checks if email address is null', function () {
     post(route('ai-email-suggest'), ['email' => null])->assertInvalid(['email' => 'required']);
 });
 
-it('returns an empty prompt if fake', function () {
-    $inputEmail = 'text@example.com';
-    AiEmailSuggest::fake();
-    expect(AiEmailSuggest::createPrompt($inputEmail))->toBe('');
-});
+//it('returns an empty prompt if fake', function () {
+//    $inputEmail = 'text@example.com';
+//    AiEmailSuggest::fake();
+//    expect(AiEmailSuggest::createPrompt($inputEmail))->toBe('');
+//});
 
 it('can use cache', function () {
     $inputEmail = 'text@example.com';
-    $cacheKey = 'ai-email-suggest-'.$inputEmail;
+    $cacheKey = 'ai-email-suggest-'.'example.com';
 
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
-    Cache::shouldReceive('get')->once()->with($cacheKey)->andReturn('text@text.com');
-
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
+    Cache::shouldReceive('get')->once()->with($cacheKey)->andReturn('example.com');
 
     $suggestion = AiEmailSuggest::suggest($inputEmail);
 
-    $this->expect($suggestion)->toBe('text@text.com');
+    $this->expect($suggestion)->toBe('text@example.com');
 });
 
 it('saves suggestions in cache', function () {
     $inputEmail = 'text@example.com';
-    $cacheKey = 'ai-email-suggest-'.$inputEmail;
-
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
+    $cacheKey = 'ai-email-suggest-'.'example.com';
 
     Cache::shouldReceive('forever')->once()->withArgs([$cacheKey, 'suggestion']);
-
-    $aiSuggest = new \Sfolador\AiEmailSuggest\AiEmailSuggest();
-    $aiSuggest->saveSuggestion($inputEmail, 'suggestion');
+    AiEmailSuggest::saveSuggestion($inputEmail, 'suggestion');
 });
 
 it('checks if suggestion is already seen', function () {
     $inputEmail = 'text@example.com';
-    $cacheKey = 'ai-email-suggest-'.$inputEmail;
+    $cacheKey = 'ai-email-suggest-'.'example.com';
 
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
 
-    $aiSuggest = new \Sfolador\AiEmailSuggest\AiEmailSuggest();
-    expect($aiSuggest->suggestionAlreadySeen($inputEmail))->toBeTrue();
+    expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeTrue();
 });
 
 it('suggestion has not been seen if the config is false', function () {
     $inputEmail = 'text@example.com';
 
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
     config()->set('ai-email-suggest.use_cache', false);
 
-    $aiSuggest = new \Sfolador\AiEmailSuggest\AiEmailSuggest();
-    expect($aiSuggest->suggestionAlreadySeen($inputEmail))->toBeFalse();
+    expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeFalse();
 });
 
 it('could return a null suggestion', function () {
     $inputEmail = 'text@example.com';
-    config()->set('ai-email-suggest.openai_key', 'test_api_key');
 
-    $mocked = \Pest\Laravel\mock(\Sfolador\AiEmailSuggest\AiEmailSuggest::class)
-        ->makePartial()
-        ->shouldReceive('suggestionAlreadySeen')
-        ->withArgs([$inputEmail])
-        ->andReturn($inputEmail)->getMock();
+    AiService::fake();
 
-    $mocked->shouldReceive('hasSuggestion')
-        ->andReturnFalse()->getMock();
-
-    $results = $mocked->suggest($inputEmail);
+    $results = AiEmailSuggest::suggest($inputEmail);
     expect($results)->toBeNull();
 });
 
 it('creates a prompt with a view', function () {
     $inputEmail = 'text@example.com';
 
-    $aiSuggest = new Sfolador\AiEmailSuggest\AiEmailSuggest();
-    $prompt = $aiSuggest->createPrompt($inputEmail);
+    $prompt = AiEmailSuggest::createPrompt($inputEmail);
 
     expect($prompt)->toContain($inputEmail);
 });
 
+it('can create a prompt', function () {
+    AiEmailSuggest::fake();
+
+    expect(AiEmailSuggest::createPrompt($this->inputEmail))->toContain($this->inputEmail);
+});
+
 //
-//it('get response api',function(){
-//    $inputEmail = "text@example.com";
+//it('returns a create response',function(){
 //
-//    $aiSuggest = new Sfolador\AiEmailSuggest\AiEmailSuggest();
+//    $response = CreateResponse::from(
+//        [
+//            'id' => '1',
+//            'object' => 'text_completion',
+//            'created' => 1,
+//            'model' => 'davinci:2020-05-03',
+//            'choices' => [
+//                [
+//                    'text' => 'test@test.com',
+//                    'index' => 1,
+//                    'logprobs' => null,
+//                    'finish_reason' => 'stop',
+//                ],
+//            ],
+//            'usage' => [
+//                'prompt_tokens' => 1,
+//                'completion_tokens' => 1,
+//                'total_tokens' => 1,
+//            ],
+//        ]
+//    );
 //
-//    $prompt = $aiSuggest->createPrompt($inputEmail);
-//    $createParams = [
-//        'prompt' => $prompt,
-//        'model' => config('ai-email-suggest.model'),
-//    ];
+//    \Pest\Laravel\mock(Client::class)
+//        ->shouldReceive('completions')
+//        ->andReturn(\Pest\Laravel\mock(Completions::class)
+//            ->shouldReceive('create')
+//            ->andReturn($response)
+//            ->getMock()
+//        )->getMock();
 //
-//    $response = CreateResponse::from([
-//        'id' => 'test',
-//        'object' => 'test',
-//        'created' => 1,
-//        'model' => 'test',
-//        'choices' => [
-//            [
-//                'text' =>    $inputEmail ,
-//                'index' => 1,
-//                'logprobs' => null,
-//                'finish_reason' => 'test',
-//            ]
-//        ],
-//        'usage' => [         'prompt_tokens' =>   1  ,
-//            'completion_tokens' => 1,
-//            'total_tokens' => 2
-//            ]
-//    ]);
-//
-//    $mocked = \Pest\Laravel\mock(\OpenAI\Resources\Completions::class)
-//        ->makePartial()
-//        ->shouldReceive('create')
-//        ->withArgs([$createParams])
-//        ->andReturn($response)->getMock();
-//
-//    $aiSuggest->suggest($inputEmail);
-//    expect($aiSuggest->getApiResponse())->toBe($response);
+//    $suggestion = AiService::getSuggestion('test@test.com');
 //
 //
+//    expect($suggestion)->toBeInstanceOf(CreateResponse::class);
 //});
