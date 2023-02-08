@@ -11,6 +11,8 @@ class AiEmailSuggestFake implements AiEmailSuggestInterface
 
     public function createPrompt(string $email): string
     {
-        return '';
+        return view('ai-email-suggest::prompt', [
+            'email' => $email,
+        ])->render();
     }
 }

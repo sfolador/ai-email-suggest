@@ -4,41 +4,51 @@ namespace Sfolador\AiEmailSuggest;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use OpenAI;
 use OpenAI\Responses\Completions\CreateResponse;
+use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
 
 class AiEmailSuggest implements AiEmailSuggestInterface
 {
-    private OpenAI\Client $client;
-
-    private string|null $suggestion;
+    private string|null $suggestion = null;
 
     private string $email;
 
-    public function __construct()
+    public function __construct(private readonly AiServiceInterface $aiService)
     {
-        $this->client = OpenAI::client(config('ai-email-suggest.openai_key'));
     }
 
-    private function getSuggestion(): void
+    private function retrieveSuggestion(): void
     {
         if ($this->suggestionAlreadySeen($this->email)) {
-            $this->suggestion = $this->getSeenSuggestion($this->email);
+            $suggestedDomain = $this->cachedSuggestionFor($this->email);
+            $address = $this->extractEmailAddress($this->email);
+            $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
 
             return;
         }
-        $response = $this->getApiResponse();
 
-        $this->suggestion = Str::of(collect($response->choices)->first()->text)->trim()->value();
-        $this->saveSuggestion($this->email, $this->suggestion);
+        $response = $this->aiService->getSuggestion($this->createPrompt($this->email));
+
+        $suggestedDomain = $this->extractFirstChoice($response);
+        if ($suggestedDomain === '') {
+            $this->suggestion = null;
+
+            return;
+        }
+
+        $address = $this->extractEmailAddress($this->email);
+
+        $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
+        $this->saveSuggestion($this->email, $suggestedDomain);
     }
 
-    public function getApiResponse(): CreateResponse
+    private function extractFirstChoice(?CreateResponse $response): string
     {
-        return  $this->client->completions()->create([
-            'prompt' => $this->createPrompt($this->email),
-            'model' => config('ai-email-suggest.model'),
-        ]);
+        if (! $response) {
+            return '';
+        }
+
+        return Str::of(collect($response->choices)->first()?->text)->trim()->value();
     }
 
     public function createPrompt(string $email): string
@@ -51,43 +61,44 @@ class AiEmailSuggest implements AiEmailSuggestInterface
     public function suggest(string $email): string|null
     {
         $this->email = $email;
-        $this->getSuggestion();
+        $this->retrieveSuggestion();
 
-        if ($this->hasSuggestion()) {
-            return $this->suggestion;
-        }
-
-        return null;
+        return $this->suggestion;
     }
 
-    public function hasSuggestion(): bool
-    {
-        return $this->suggestion !== $this->email;
-    }
-
-    public function suggestionAlreadySeen($email): bool
+    public function suggestionAlreadySeen(string $email): bool
     {
         if (! config('ai-email-suggest.use_cache')) {
             return false;
         }
 
-        return Cache::has($this->getCacheKey($email));
+        return Cache::has($this->getCacheKey($this->extractDomain($email)));
     }
 
-    public function saveSuggestion($email, $suggestion): void
+    public function saveSuggestion(string $email, string $suggestion): void
     {
         if (config('ai-email-suggest.use_cache')) {
-            Cache::forever($this->getCacheKey($email), $suggestion);
+            Cache::forever($this->getCacheKey($this->extractDomain($email)), $suggestion);
         }
     }
 
-    private function getSeenSuggestion($email): mixed
+    private function cachedSuggestionFor(string $email): mixed
     {
-        return Cache::get($this->getCacheKey($email));
+        return Cache::get($this->getCacheKey($this->extractDomain($email)));
     }
 
-    private function getCacheKey($email): string
+    private function getCacheKey(string $email): string
     {
-        return 'ai-email-suggest-'.$email;
+        return 'ai-email-suggest-'.$this->extractDomain($email);
+    }
+
+    private function extractDomain(string $email): string
+    {
+        return Str::of($email)->after('@')->value();
+    }
+
+    private function extractEmailAddress(string $email): string
+    {
+        return Str::of($email)->before('@')->value();
     }
 }
