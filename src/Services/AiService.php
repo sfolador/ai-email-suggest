@@ -11,7 +11,7 @@ class AiService implements AiServiceInterface
     {
     }
 
-    public function getSuggestion(string $prompt): CreateResponse
+    public function getSuggestion(string $prompt): ?CreateResponse
     {
         return  $this->client->completions()->create([
             'prompt' => $prompt,
