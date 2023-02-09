@@ -29,7 +29,8 @@ This is the contents of the published config file:
 return [
     'model' => 'text-davinci-003',
     'openai_key' => env('OPENAI_KEY'),
-    'default_response' => 'Maybe you meant %suggestion%?'
+    'default_route' => 'ai-email-suggest',
+    'use_cache' => true,
 ];
 ```
 
@@ -60,7 +61,7 @@ composer test
 ```
 ## TODO
 
-- [ ] Add caching to avoid too many requests to OpenAI
+- [X] Add caching to avoid too many requests to OpenAI
 - [ ] Add throttling to avoid too many requests to OpenAI
 
 
