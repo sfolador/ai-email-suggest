@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Cache;
 use OpenAI\Responses\Completions\CreateResponse;
-use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 use Sfolador\AiEmailSuggest\Facades\AiService;
 use Sfolador\AiEmailSuggest\Services\AiServiceFake;
@@ -27,7 +26,6 @@ it('should suggest a correct email address', function () {
     $results = AiEmailSuggest::suggest($initialInput);
     $this->expect($results)->toBe($suggestion);
 });
-
 
 it('can use cache to avoid api calls', function () {
     $inputEmail = 'text@exampl.com';
@@ -128,7 +126,6 @@ it('can create a prompt', function () {
     expect($prompt)
         ->toContain(Str::of('Input:')->append($inputEmail)->value());
 });
-
 
 it('can create a prompt with the fake facade', function () {
     $inputEmail = 'text@example.com';
