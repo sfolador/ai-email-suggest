@@ -11,12 +11,12 @@ use Sfolador\AiEmailSuggest\AiEmailSuggestInterface;
  */
 class AiEmailSuggest extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return AiEmailSuggestInterface::class;
     }
 
-    public static function fake()
+    public static function fake(): void
     {
         static::swap(new AiEmailSuggestFake());
     }

@@ -40,7 +40,10 @@ class AiEmailSuggest implements AiEmailSuggestInterface
             return '';
         }
 
-        return Str::of(collect($response->choices)->first()?->text)->trim()->value();
+        if (collect($response->choices)->first()?->text === null) {
+            return '';
+        }
+        return Str::of(collect($response->choices)->first()->text)->trim()->value();
     }
 
     public function createPrompt(string $email): string

@@ -3,6 +3,7 @@
 namespace Sfolador\AiEmailSuggest;
 
 use OpenAI;
+use Sfolador\AiEmailSuggest\Commands\AiEmailSuggestCommandClear;
 use Sfolador\AiEmailSuggest\Services\AiService;
 use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
 use Spatie\LaravelPackageTools\Package;
@@ -21,21 +22,27 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
             ->name('ai-email-suggest')
             ->hasRoute('ai_email_suggest_routes')
             ->hasViews()
+            ->hasCommand(AiEmailSuggestCommandClear::class)
             ->hasConfigFile();
     }
 
-    public function registeringPackage()
+    public function registeringPackage():void
     {
-        // $this->app->alias(AiEmailSuggest::class, 'email-suggest');
 
         $this->app->bind(AiServiceInterface::class, function () {
-            $client = OpenAI::client(config('ai-email-suggest.openai_key'));
+
+            $apiKey = config('ai-email-suggest.api_key') ?? '';
+            $client = OpenAI::client($apiKey);
 
             return new AiService($client);
         });
 
         $this->app->bind(AiEmailSuggestInterface::class, function () {
-            return new AiEmailSuggest(app(AiServiceInterface::class));
+            /**
+             * @var AiServiceInterface $aiEmailSuggestInterface
+             */
+            $aiEmailSuggestInterface = app(AiServiceInterface::class);
+            return new AiEmailSuggest($aiEmailSuggestInterface);
         });
     }
 }
