@@ -1,11 +1,9 @@
 <?php
 
-
-use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 use function Pest\Laravel\post;
+use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 
 it('should return a suggestion', function () {
-
     $initialInput = 'test@yaoh.com';
     AiEmailSuggest::fake();
 
@@ -25,11 +23,8 @@ it('validates the email address', function () {
         ->assertInvalid(['email' => 'required']);
 });
 
-
 it('requires an email address', function () {
-
     AiEmailSuggest::fake();
     post(route('ai-email-suggest'), ['email' => null])
         ->assertInvalid(['email' => 'required']);
-
 });

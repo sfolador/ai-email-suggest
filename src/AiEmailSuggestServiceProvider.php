@@ -26,11 +26,9 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
             ->hasConfigFile();
     }
 
-    public function registeringPackage():void
+    public function registeringPackage(): void
     {
-
         $this->app->bind(AiServiceInterface::class, function () {
-
             $apiKey = config('ai-email-suggest.api_key') ?? '';
             $client = OpenAI::client($apiKey);
 
@@ -42,6 +40,7 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
              * @var AiServiceInterface $aiEmailSuggestInterface
              */
             $aiEmailSuggestInterface = app(AiServiceInterface::class);
+
             return new AiEmailSuggest($aiEmailSuggestInterface);
         });
     }
