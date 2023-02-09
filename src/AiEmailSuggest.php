@@ -17,29 +17,21 @@ class AiEmailSuggest implements AiEmailSuggestInterface
     {
     }
 
-    private function retrieveSuggestion(): void
+    private function retrieveSuggestion(): string|null
     {
-        if ($this->suggestionAlreadySeen($this->email)) {
-            $suggestedDomain = $this->cachedSuggestionFor($this->email);
-            $address = $this->extractEmailAddress($this->email);
-            $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
-
-            return;
-        }
-
         $response = $this->aiService->getSuggestion($this->createPrompt($this->email));
 
         $suggestedDomain = $this->extractFirstChoice($response);
         if ($suggestedDomain === '') {
-            $this->suggestion = null;
-
-            return;
+            return $this->suggestion;
         }
 
         $address = $this->extractEmailAddress($this->email);
 
-        $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
         $this->saveSuggestion($this->email, $suggestedDomain);
+        $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
+
+        return $this->suggestion;
     }
 
     private function extractFirstChoice(?CreateResponse $response): string
@@ -61,9 +53,16 @@ class AiEmailSuggest implements AiEmailSuggestInterface
     public function suggest(string $email): string|null
     {
         $this->email = $email;
-        $this->retrieveSuggestion();
 
-        return $this->suggestion;
+        if ($this->suggestionAlreadySeen($this->email)) {
+            $suggestedDomain = $this->cachedSuggestionFor($this->email);
+            $address = $this->extractEmailAddress($this->email);
+            $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
+
+            return $this->suggestion;
+        }
+
+        return $this->retrieveSuggestion();
     }
 
     public function suggestionAlreadySeen(string $email): bool

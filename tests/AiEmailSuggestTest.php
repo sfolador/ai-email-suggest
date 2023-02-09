@@ -1,9 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Cache;
+use OpenAI\Responses\Completions\CreateResponse;
 use function Pest\Laravel\post;
 use Sfolador\AiEmailSuggest\Facades\AiEmailSuggest;
 use Sfolador\AiEmailSuggest\Facades\AiService;
+use Sfolador\AiEmailSuggest\Services\AiServiceFake;
+use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
 
 beforeEach(function () {
     $this->inputEmail = 'text@example.com';
@@ -29,7 +32,7 @@ it('should suggest a correct email address', function () {
 });
 
 it('should return a suggestion from a controller', function () {
-    $initialInput = 'test@yaohh.com';
+    $initialInput = 'test@yaoh.com';
 
     AiEmailSuggest::fake();
 
@@ -52,13 +55,7 @@ it('checks if email address is null', function () {
     post(route('ai-email-suggest'), ['email' => null])->assertInvalid(['email' => 'required']);
 });
 
-//it('returns an empty prompt if fake', function () {
-//    $inputEmail = 'text@example.com';
-//    AiEmailSuggest::fake();
-//    expect(AiEmailSuggest::createPrompt($inputEmail))->toBe('');
-//});
-
-it('can use cache', function () {
+it('can use cache to avoid api calls', function () {
     $inputEmail = 'text@example.com';
     $cacheKey = 'ai-email-suggest-'.'example.com';
 
@@ -98,7 +95,50 @@ it('suggestion has not been seen if the config is false', function () {
 it('could return a null suggestion', function () {
     $inputEmail = 'text@example.com';
 
+    $response = CreateResponse::from(
+        [
+            'id' => '1',
+            'object' => 'text_completion',
+            'created' => 1,
+            'model' => 'davinci:2020-05-03',
+            'choices' => [
+                [
+                    'text' => '',
+                    'index' => 1,
+                    'logprobs' => null,
+                    'finish_reason' => 'stop',
+                ],
+            ],
+            'usage' => [
+                'prompt_tokens' => 1,
+                'completion_tokens' => 1,
+                'total_tokens' => 1,
+            ],
+        ]
+    );
+
+    $prompt = view('ai-email-suggest::prompt', ['email' => $inputEmail])->render();
+
     AiService::fake();
+    AiService::shouldReceive('getSuggestion')
+        ->withArgs([$prompt])
+        ->andReturn($response);
+
+    $results = AiEmailSuggest::suggest($inputEmail);
+    expect($results)->toBeNull();
+});
+
+it('could return a empty suggestion', function () {
+    $inputEmail = 'text@example.com';
+
+    $response = null;
+
+    $prompt = view('ai-email-suggest::prompt', ['email' => $inputEmail])->render();
+
+    AiService::fake();
+    AiService::shouldReceive('getSuggestion')
+        ->withArgs([$prompt])
+        ->andReturn($response);
 
     $results = AiEmailSuggest::suggest($inputEmail);
     expect($results)->toBeNull();
@@ -118,41 +158,23 @@ it('can create a prompt', function () {
     expect(AiEmailSuggest::createPrompt($this->inputEmail))->toContain($this->inputEmail);
 });
 
-//
-//it('returns a create response',function(){
-//
-//    $response = CreateResponse::from(
-//        [
-//            'id' => '1',
-//            'object' => 'text_completion',
-//            'created' => 1,
-//            'model' => 'davinci:2020-05-03',
-//            'choices' => [
-//                [
-//                    'text' => 'test@test.com',
-//                    'index' => 1,
-//                    'logprobs' => null,
-//                    'finish_reason' => 'stop',
-//                ],
-//            ],
-//            'usage' => [
-//                'prompt_tokens' => 1,
-//                'completion_tokens' => 1,
-//                'total_tokens' => 1,
-//            ],
-//        ]
-//    );
-//
-//    \Pest\Laravel\mock(Client::class)
-//        ->shouldReceive('completions')
-//        ->andReturn(\Pest\Laravel\mock(Completions::class)
-//            ->shouldReceive('create')
-//            ->andReturn($response)
-//            ->getMock()
-//        )->getMock();
-//
-//    $suggestion = AiService::getSuggestion('test@test.com');
-//
-//
-//    expect($suggestion)->toBeInstanceOf(CreateResponse::class);
-//});
+it('returns a response', function () {
+    AiService::fake();
+    $randName = Str::random(10);
+    $randEmail = $randName.'@gmial.com';
+    $response = AiEmailSuggest::suggest($randEmail);
+
+    expect($response)
+        ->toBeString()
+        ->toBe($randName.'@test.com');
+});
+
+it('has a fake version of the service', function () {
+    $service = app(AiServiceInterface::class);
+    expect($service)->toBeInstanceOf(\Sfolador\AiEmailSuggest\Services\AiService::class);
+
+    AiService::fake();
+    $service = app(AiServiceInterface::class);
+
+    expect($service)->toBeInstanceOf(AiServiceFake::class);
+});

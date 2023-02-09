@@ -14,7 +14,14 @@ class AiServiceFake implements AiServiceInterface
                 'object' => 'text_completion',
                 'created' => 1,
                 'model' => 'davinci:2020-05-03',
-                'choices' => [],
+                'choices' => [
+                    [
+                        'text' => 'test.com',
+                        'index' => 1,
+                        'logprobs' => null,
+                        'finish_reason' => 'stop',
+                    ],
+                ],
                 'usage' => [
                     'prompt_tokens' => 1,
                     'completion_tokens' => 1,
