@@ -12,6 +12,6 @@ class AiEmailSuggestCommandClear extends Command
 
     public function handle(): void
     {
-        $this->info("WIP");
+        $this->info('WIP');
     }
 }
