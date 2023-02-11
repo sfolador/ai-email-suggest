@@ -1,9 +1,11 @@
-# Never worry about typos in email addresses
+<img src="https://banners.beyondco.de/AiEmailSuggest.png?theme=light&packageManager=composer+require&packageName=sfolador%2Fai-email-suggest&pattern=architect&style=style_2&description=Prevent+typos+in+user+email+addresses&md=1&showWatermark=1&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg&widths=450&heights=750">
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sfolador/ai-email-suggest.svg?style=flat-square)](https://packagist.org/packages/sfolador/ai-email-suggest)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sfolador/ai-email-suggest/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sfolador/ai-email-suggest/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/sfolador/ai-email-suggest/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/sfolador/ai-email-suggest/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/sfolador/ai-email-suggest.svg?style=flat-square)](https://packagist.org/packages/sfolador/ai-email-suggest)
+
+# Never worry about typos in email addresses in Laravel
 
 This package provides a simple way to suggest email addresses based on a given email address. The typical use case is
 when a user enters an email address with typos, i.e.: example@gmial.com. 
