@@ -4,6 +4,11 @@ All notable changes to `ai-email-suggest` will be documented in this file.
 
 ### 1.0.4 Added email validation
 
+## Throttle requests and clear cache - 2023-02-11
+
+- Added a throttle feature to allow users to throttle requests to the ai-email-suggest endpoint to prevent too many api calls.
+- added a command to clear the email suggestion cache (only for cache drivers that support tagging)
+
 ## Fixes - 2023-02-09
 
 fixed wrong api key in provider
