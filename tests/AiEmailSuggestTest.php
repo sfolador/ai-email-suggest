@@ -66,8 +66,22 @@ it('suggestion has not been seen if the config is false', function () {
     expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeFalse();
 });
 
-it('returns a null suggestion if api text is empty', function () {
+it('returns a null suggestion if api response is null', function () {
     $inputEmail = 'text@example.com';
+
+    $prompt = view('ai-email-suggest::prompt', ['email' => $inputEmail])->render();
+
+    //AiService::fake();
+    AiService::shouldReceive('getSuggestion')
+        ->withArgs([$prompt])
+        ->andReturnNull();
+
+    $results = AiEmailSuggest::suggest($inputEmail);
+    expect($results)->toBeNull();
+});
+
+it('returns a null suggestion if api text is empty', function () {
+    $inputEmail = fake()->email;
 
     $response = CreateResponse::from(
         [
@@ -97,6 +111,8 @@ it('returns a null suggestion if api text is empty', function () {
     AiService::shouldReceive('getSuggestion')
         ->withArgs([$prompt])
         ->andReturn($response);
+
+    //  AiEmailSuggest::shouldReceive('suggestionAlreadySeen')->andReturnFalse();
 
     $results = AiEmailSuggest::suggest($inputEmail);
     expect($results)->toBeNull();

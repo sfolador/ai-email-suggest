@@ -40,7 +40,7 @@ class AiEmailSuggest implements AiEmailSuggestInterface
             return '';
         }
 
-        if (collect($response->choices)->first()?->text === null) {
+        if (collect($response->choices)->first()?->text === '' || ! collect($response->choices)->first()) {
             return '';
         }
 
@@ -61,6 +61,7 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         if ($this->suggestionAlreadySeen($this->email)) {
             $suggestedDomain = $this->cachedSuggestionFor($this->email);
             $address = $this->extractEmailAddress($this->email);
+            /** @phpstan-ignore-next-line  */
             $this->suggestion = Str::of($address)->append('@')->append($suggestedDomain)->value();
 
             return $this->suggestion;

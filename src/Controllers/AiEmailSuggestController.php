@@ -13,6 +13,7 @@ class AiEmailSuggestController extends Controller
     {
         $email = $request->get('email');
 
+        /** @phpstan-ignore-next-line  */
         $suggestion = AiEmailSuggest::suggest($email);
 
         return response()->json([

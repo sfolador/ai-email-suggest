@@ -30,6 +30,7 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
     {
         $this->app->bind(AiServiceInterface::class, function () {
             $apiKey = config('ai-email-suggest.openai_key') ?? '';
+            /** @phpstan-ignore-next-line  */
             $client = OpenAI::client($apiKey);
 
             return new AiService($client);
