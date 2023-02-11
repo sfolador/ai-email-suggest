@@ -4,6 +4,7 @@ namespace Sfolador\AiEmailSuggest;
 
 use OpenAI;
 use Sfolador\AiEmailSuggest\Commands\AiEmailSuggestCommandClear;
+use Sfolador\AiEmailSuggest\Middleware\AiEmailSuggestThrottle;
 use Sfolador\AiEmailSuggest\Services\AiService;
 use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
 use Spatie\LaravelPackageTools\Package;
@@ -44,5 +45,8 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
 
             return new AiEmailSuggest($aiEmailSuggestInterface);
         });
+
+        app('router')->aliasMiddleware('ai-suggest-throttle',AiEmailSuggestThrottle::class);
+
     }
 }

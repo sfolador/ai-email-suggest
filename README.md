@@ -62,7 +62,8 @@ composer test
 ## TODO
 
 - [X] Add caching to avoid too many requests to OpenAI
-- [ ] Add throttling to avoid too many requests to OpenAI
+- [X] Add throttling to avoid too many requests to OpenAI
+- [ ] Add support for cache clear
 
 
 ## Changelog
