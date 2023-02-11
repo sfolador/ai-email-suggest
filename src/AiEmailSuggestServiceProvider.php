@@ -3,7 +3,7 @@
 namespace Sfolador\AiEmailSuggest;
 
 use OpenAI;
-use Sfolador\AiEmailSuggest\Commands\AiEmailSuggestCommandClear;
+use Sfolador\AiEmailSuggest\Commands\AiSuggestClearCache;
 use Sfolador\AiEmailSuggest\Middleware\AiEmailSuggestThrottle;
 use Sfolador\AiEmailSuggest\Services\AiService;
 use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
@@ -23,7 +23,7 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
             ->name('ai-email-suggest')
             ->hasRoute('ai_email_suggest_routes')
             ->hasViews()
-            ->hasCommand(AiEmailSuggestCommandClear::class)
+            ->hasCommand(AiSuggestClearCache::class)
             ->hasConfigFile();
     }
 

@@ -76,12 +76,21 @@ class AiEmailSuggest implements AiEmailSuggestInterface
             return false;
         }
 
+        if (Cache::supportsTags()) {
+            return Cache::tags('ai-email-suggest')->has($this->getCacheKey($this->extractDomain($email)));
+        }
+
         return Cache::has($this->getCacheKey($this->extractDomain($email)));
     }
 
     public function saveSuggestion(string $email, string $suggestion): void
     {
         if (config('ai-email-suggest.use_cache')) {
+            if (Cache::supportsTags()) {
+                Cache::tags('ai-email-suggest')->forever($this->getCacheKey($this->extractDomain($email)), $suggestion);
+
+                return;
+            }
             Cache::forever($this->getCacheKey($this->extractDomain($email)), $suggestion);
         }
     }

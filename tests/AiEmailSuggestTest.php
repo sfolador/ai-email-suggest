@@ -33,6 +33,7 @@ it('can use cache to avoid api calls', function () {
 
     $results = 'text@example.com';
 
+    Cache::shouldReceive('supportsTags')->andReturn(false);
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
     Cache::shouldReceive('get')->once()->with($cacheKey)->andReturn('example.com');
 
@@ -44,7 +45,16 @@ it('can use cache to avoid api calls', function () {
 it('saves suggestions in cache', function () {
     $inputEmail = 'text@example.com';
     $cacheKey = 'ai-email-suggest-'.'example.com';
+    Cache::shouldReceive('supportsTags')->andReturn(false);
+    Cache::shouldReceive('forever')->once()->withArgs([$cacheKey, 'suggestion']);
+    AiEmailSuggest::saveSuggestion($inputEmail, 'suggestion');
+});
 
+it('saves suggestions in cache with tags', function () {
+    $inputEmail = 'text@example.com';
+    $cacheKey = 'ai-email-suggest-'.'example.com';
+    Cache::shouldReceive('supportsTags')->andReturn(true);
+    Cache::shouldReceive('tags')->with('ai-email-suggest')->andReturnSelf();
     Cache::shouldReceive('forever')->once()->withArgs([$cacheKey, 'suggestion']);
     AiEmailSuggest::saveSuggestion($inputEmail, 'suggestion');
 });
@@ -53,6 +63,18 @@ it('checks if suggestion is already seen', function () {
     $inputEmail = 'text@example.com';
     $cacheKey = 'ai-email-suggest-'.'example.com';
 
+    Cache::shouldReceive('supportsTags')->andReturn(false);
+    Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
+
+    expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeTrue();
+});
+
+it('checks if suggestion is already seen with tags enabled', function () {
+    $inputEmail = 'text@example.com';
+    $cacheKey = 'ai-email-suggest-'.'example.com';
+
+    Cache::shouldReceive('supportsTags')->andReturn(true);
+    Cache::shouldReceive('tags')->with('ai-email-suggest')->andReturnSelf();
     Cache::shouldReceive('has')->once()->with($cacheKey)->andReturn(true);
 
     expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeTrue();
@@ -63,6 +85,15 @@ it('suggestion has not been seen if the config is false', function () {
 
     config()->set('ai-email-suggest.use_cache', false);
 
+    expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeFalse();
+});
+
+it('suggestion has not been seen if the config is false with tags enabled', function () {
+    $inputEmail = 'text@example.com';
+
+    config()->set('ai-email-suggest.use_cache', false);
+    Cache::shouldReceive('supportsTags')->andReturn(true);
+    Cache::shouldReceive('tags')->with('ai-email-suggest')->andReturnSelf();
     expect(AiEmailSuggest::suggestionAlreadySeen($inputEmail))->toBeFalse();
 });
 

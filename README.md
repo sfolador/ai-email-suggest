@@ -57,6 +57,14 @@ The response will be a JSON with the suggested email, such as:
 }
 ```
 
+## Cache clear
+
+If you use a Cache driver that supports tags, you can clear the cache by invoking the command: 
+
+```bash
+php artisan ai-email-suggest:clear-cache
+```
+
 
 
 ## Testing
@@ -68,7 +76,7 @@ composer test
 
 - [X] Add caching to avoid too many requests to OpenAI
 - [X] Add throttling to avoid too many requests to OpenAI
-- [ ] Add support for cache clear
+- [X] Add support for cache clear
 
 
 ## Changelog
