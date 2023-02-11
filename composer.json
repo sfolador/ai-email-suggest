@@ -1,10 +1,12 @@
 {
     "name": "sfolador/ai-email-suggest",
-    "description": "This package suggests email addresses",
+    "description": "This package helps user to fix typos in email addresses by using openai api to suggest a valid email address.",
     "keywords": [
         "sfolador",
         "laravel",
-        "ai-email-suggest"
+        "ai-email-suggest",
+        "openai",
+        "email"
     ],
     "homepage": "https://github.com/sfolador/ai-email-suggest",
     "license": "MIT",
@@ -17,19 +19,19 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/contracts": "^9.0",
+        "illuminate/contracts": "^10.0",
         "openai-php/client": "^0.3.0",
         "spatie/laravel-package-tools": "^1.14.0"
     },
     "require-dev": {
-        "laravel/pint": "^1.0",
-        "nunomaduro/collision": "^6.0",
+        "laravel/pint": "^1.4.1",
+        "nunomaduro/collision": "^7.0.0",
         "nunomaduro/larastan": "^2.4",
-        "orchestra/testbench": "^7.0",
-        "pestphp/pest": "^1.21",
-        "pestphp/pest-plugin-laravel": "^1.1",
+        "orchestra/testbench": "^8.0-dev",
+        "pestphp/pest": "^2.0.0",
+        "pestphp/pest-plugin-laravel": "^2.x-dev",
         "phpstan/phpstan": "^1.9",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "psr-4": {

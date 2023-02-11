@@ -204,3 +204,14 @@ it('has a fake version of the service', function () {
 
     expect($service)->toBeInstanceOf(AiServiceFake::class);
 });
+
+it('service returns a createresponse', function () {
+    $client = mockClient('POST', 'completions', [
+        'model' => config('ai-email-suggest.model'),
+        'prompt' => 'prompt',
+    ], completion());
+
+    $service = new \Sfolador\AiEmailSuggest\Services\AiService($client);
+
+    expect($service->getSuggestion('prompt'))->toBeInstanceOf(CreateResponse::class);
+});
