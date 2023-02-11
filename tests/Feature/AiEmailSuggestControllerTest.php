@@ -29,8 +29,7 @@ it('requires an email address', function () {
         ->assertInvalid(['email' => 'required']);
 });
 
-
-it('should not throttle requests if throttle is disabled',function(){
+it('should not throttle requests if throttle is disabled', function () {
     config()->set('ai-email-suggest.throttle.enabled', false);
     $initialInput = 'test@yaoh.com';
     AiEmailSuggest::fake();
@@ -38,8 +37,7 @@ it('should not throttle requests if throttle is disabled',function(){
     $response = post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
 });
 
-
-it('should throttle requests',function(){
+it('should throttle requests', function () {
     config()->set('ai-email-suggest.throttle.enabled', true);
     config()->set('ai-email-suggest.throttle.max_attempts', 2);
     $initialInput = 'test@yaoh.com';
@@ -48,6 +46,4 @@ it('should throttle requests',function(){
     post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
     post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
     post(route('ai-email-suggest'), ['email' => $initialInput])->assertTooManyRequests();
-
-
 });

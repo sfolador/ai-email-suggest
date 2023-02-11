@@ -46,7 +46,6 @@ class AiEmailSuggestServiceProvider extends PackageServiceProvider
             return new AiEmailSuggest($aiEmailSuggestInterface);
         });
 
-        app('router')->aliasMiddleware('ai-suggest-throttle',AiEmailSuggestThrottle::class);
-
+        app('router')->aliasMiddleware('ai-suggest-throttle', AiEmailSuggestThrottle::class);
     }
 }

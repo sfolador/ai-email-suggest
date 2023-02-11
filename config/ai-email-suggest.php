@@ -9,6 +9,6 @@ return [
     'throttle' => [
         'enabled' => false,
         'max_attempts' => 60,
-        'prefix' => "ai-email-suggest",
+        'prefix' => 'ai-email-suggest',
     ],
 ];
