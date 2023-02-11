@@ -45,5 +45,5 @@ it('should throttle requests', function () {
 
     post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
     post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
-    post(route('ai-email-suggest'), ['email' => $initialInput])->assertTooManyRequests();
+    post(route('ai-email-suggest'), ['email' => $initialInput])->assertStatus(429); //too many requests, fix for github actions.
 });
