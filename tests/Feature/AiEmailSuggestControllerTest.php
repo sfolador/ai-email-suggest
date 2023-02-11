@@ -34,7 +34,7 @@ it('should not throttle requests if throttle is disabled', function () {
     $initialInput = 'test@yaoh.com';
     AiEmailSuggest::fake();
 
-    $response = post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
+    post(route('ai-email-suggest'), ['email' => $initialInput])->assertOk();
 });
 
 it('should throttle requests', function () {
