@@ -3,6 +3,10 @@
 All notable changes to `ai-email-suggest` will be documented in this file.
 
 
+## Laravel 10 support - 2023-02-11
+
+Added Pint 2.0 and support for Laravel 10
+
 ## Throttle requests and clear cache - 2023-02-11
 
 - Added a throttle feature to allow users to throttle requests to the ai-email-suggest endpoint to prevent too many api calls.
