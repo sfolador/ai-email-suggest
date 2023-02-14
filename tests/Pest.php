@@ -13,11 +13,6 @@ uses(TestCase::class)->in(__DIR__);
 /**
  * @see https://github.com/openai-php/client/blob/main/tests/Pest.php
  *
- * @param  string  $method
- * @param  string  $resource
- * @param  array  $params
- * @param  array|string  $response
- * @param $methodName
  * @return Client
  */
 function mockClient(string $method, string $resource, array $params, array|string $response, $methodName = 'requestObject')

@@ -2,7 +2,6 @@
 
 All notable changes to `ai-email-suggest` will be documented in this file.
 
-### 1.0.4 Added email validation
 
 ## Throttle requests and clear cache - 2023-02-11
 

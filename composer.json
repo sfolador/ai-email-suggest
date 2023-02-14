@@ -27,9 +27,9 @@
         "laravel/pint": "^1.4.1",
         "nunomaduro/collision": "^7.0.0",
         "nunomaduro/larastan": "^2.4",
-        "orchestra/testbench": "^8.0-dev",
+        "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.0.0",
-        "pestphp/pest-plugin-laravel": "^2.x-dev",
+        "pestphp/pest-plugin-laravel": "^2.0",
         "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^10.0"
     },
