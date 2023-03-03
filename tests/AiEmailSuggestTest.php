@@ -10,6 +10,8 @@ use Sfolador\AiEmailSuggest\Services\AiServiceInterface;
 beforeEach(function () {
     $this->inputEmail = 'text@example.com';
     config()->set('ai-email-suggest.openai_key', 'test_api_key');
+
+    config()->set('ai-email-suggest.use_cache', true);
 });
 
 it('can suggest an email', function () {
@@ -206,12 +208,62 @@ it('has a fake version of the service', function () {
 });
 
 it('service returns a createresponse', function () {
+    config()->set('ai-email-suggest.use_chatgpt_api', false);
     $client = mockClient('POST', 'completions', [
         'model' => config('ai-email-suggest.model'),
         'prompt' => 'prompt',
-    ], completion());
+    ], [
+        'id' => 'cmpl-asd23jkmsdfsdf',
+        'object' => 'text_completion',
+        'created' => 167812432,
+        'model' => 'text-davinci-003',
+        'choices' => [
+            [
+                'text' => 'text in response',
+                'index' => 0,
+                'logprobs' => null,
+                'finish_reason' => 'length',
+            ],
+        ],
+        'usage' => [
+            'prompt_tokens' => 1,
+            'completion_tokens' => 2,
+            'total_tokens' => 3,
+        ],
+    ]);
 
     $service = new \Sfolador\AiEmailSuggest\Services\AiService($client);
 
     expect($service->getSuggestion('prompt'))->toBeInstanceOf(CreateResponse::class);
 });
+
+//
+//it('service returns a chat create response', function () {
+//    config()->set('ai-email-suggest.use_chatgpt_api',true);
+//    $client = mockClient('POST', 'chat/completions', [
+//        'model' => 'gpt-3.5-turbo',
+//        'messages' => [['role' => 'user','content' => 'prompt']],
+//    ], [
+//        'id' => 'cmpl-asd23jkmsdfsdf',
+//        'object' => 'text_completion',
+//        'created' => 167812432,
+//        'model' => 'gpt-3.5-turbo',
+//        'choices' => [
+//            [
+//                'message' => [
+//                    "role" => "assistant",
+//                    "content" => "text in response",
+//                ]
+//            ],
+//        ],
+//        'usage' => [
+//            'prompt_tokens' => 1,
+//            'completion_tokens' => 2,
+//            'total_tokens' => 3,
+//        ],
+//    ]);
+//
+//    $service = new \Sfolador\AiEmailSuggest\Services\AiService($client);
+//
+//    expect($service->getSuggestion('prompt'))->toBeInstanceOf(\OpenAI\Responses\Chat\CreateResponse::class);
+//});

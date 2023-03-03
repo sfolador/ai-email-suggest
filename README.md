@@ -33,6 +33,9 @@ return [
     'openai_key' => env('OPENAI_KEY'),
     'default_route' => 'ai-email-suggest',
     'use_cache' => true,
+    // If you want to use the chatgpt API,
+    // you need to set the following value to true:
+    'use_chatgpt_api' => false,
     'throttle' => [
         'enabled' => false,
         'max_attempts' => 60,
@@ -67,7 +70,9 @@ If you use a Cache driver that supports tags, you can clear the cache by invokin
 php artisan ai-email-suggest:clear-cache
 ```
 
+## ChatGTP 
 
+You can use the new ChatGPT API by setting the config value `use_chatgpt_api` to `true`.
 
 ## Testing
 

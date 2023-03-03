@@ -34,12 +34,18 @@ class AiEmailSuggest implements AiEmailSuggestInterface
         return $this->suggestion;
     }
 
-    private function extractFirstChoice(?CreateResponse $response): string
+    private function extractFirstChoice(CreateResponse|\OpenAI\Responses\Chat\CreateResponse|null $response): string
     {
         if (! $response) {
             return '';
         }
+        if ($response instanceof \OpenAI\Responses\Chat\CreateResponse) {
+            if (collect($response->choices)->first()?->message->content === '' || ! collect($response->choices)->first()) {
+                return '';
+            }
 
+            return Str::of($response->choices[0]->message->content)->trim()->lower()->value();
+        }
         if (collect($response->choices)->first()?->text === '' || ! collect($response->choices)->first()) {
             return '';
         }

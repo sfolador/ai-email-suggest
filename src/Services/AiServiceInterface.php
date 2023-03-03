@@ -6,5 +6,5 @@ use OpenAI\Responses\Completions\CreateResponse;
 
 interface AiServiceInterface
 {
-    public function getSuggestion(string $prompt): ?CreateResponse;
+    public function getSuggestion(string $prompt): CreateResponse|\OpenAI\Responses\Chat\CreateResponse|null;
 }
